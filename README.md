@@ -11,9 +11,9 @@
 
 - [Data](#Data)
 
-- [Context](#Context)
-
 - [Hooks](#Hooks)
+
+- [Context](#Context)
 
 - [Pages & Components](#Pages)
 
@@ -91,6 +91,45 @@ Every object has an **id** which is a number, a **name** which is a string, a **
 ]
 ```
 
+## Hooks
+
+#### The **useLocalStorage.tsx** hook
+It is a generic hook, which means it can work with any data type, and it takes 2 parameters:
+- **key**: A string that serves as the identifier for the value in local storage.
+- **intitialValue**: The initial value to be used if no value is found in local storage. It can be either a static value or a function that computes the initial value.
+```tsx
+export function useLocalStorage<T>(key: string, initialValue: T | (() => T)){}
+```
+
+Inside the hook:
+- It uses the **useState** hook to initialize a **value** state variable. The initial value is provided as a function, which is executed to determine the initial state value.
+- The code checks if there is a value stored in the local storage corresponding to the given **key**. If a value is found, it is parsed from **JSON** and used as the initial state.
+- If no value is found in local storage, it checks if **initialValue** is a function and executes it to get the initial state. If **initialValue** is not a function, it uses it directly as the initial state.
+
+The **useEffect** hook is used to save the **value** to local storage whenever it changes.
+It creates an effect that listens for changes to both the **key** and the **value**. 
+When either of them changes, it updates the value in local storage by stringifying the **value** and storing it under the given **key**.
+
+The hook returns an array with 2 items:
+- **value**: The current value stored in local storage and managed as part of the component's state.
+- **setValue**: A function that can be used to update the **value** stored in local storage. This function can be called with a new value, and it will also update the state.
+```tsx
+export function useLocalStorage<T>(key: string, initialValue: T | (() => T)){
+    const [value, setValue] = useState<T>(() => {
+        const jsonValue = localStorage.getItem(key)
+        if(jsonValue !== null) return JSON.parse(jsonValue)
+
+        if(typeof initialValue === "function") return (initialValue as () => T)()
+        else return initialValue
+    })
+
+    useEffect(() => {
+        localStorage.setItem(key ,JSON.stringify(value))
+    }, [key, value])
+
+    return [value, setValue] as [typeof value, typeof setValue]
+}
+```
 ## Context
 Inside the context folder we have only have one file, which is *shoppingCartContext.tsx*.
 
@@ -118,3 +157,73 @@ In a child component, you can use the
 useState()
 ```
 hook to access the context's values. It takes the context object as an argument and returns the current context value.
+
+### Shopping Cart Context
+#### *Shopping Cart Context Types*
+First of all, we need 2 functions to open and close the cart.
+```tsx
+type ShoppingCartContext = {
+    openCart: () => void
+    closeCart: () => void
+    ...
+    ...
+}   
+```
+Secondly, we need a function to get the quantity of an item so that we can update the counter. Then we need an increase and a decrease quantity function. And lastly, we need a remove from cart function for the remove button.
+```tsx
+type ShoppingCartContext = {
+    openCart: () => void
+    closeCart: () => void
+    getItemQuantity: (id: number) => number
+    increaseCartQuantity: (id: number) => void
+    decreaseCartQuantity: (id: number) => void
+    removeFromCart: (id: number) => void
+    ...
+    ...
+}
+```
+Then we need to set a type for the **Cart Item**. 
+```tsx
+type CartItem = {
+    id: number
+    quantity: number
+}
+```
+And lastly we need a counter for the total count of the items, we will call it **CartQuantity**. And we an array of all the **Cart Items**.
+```tsx
+type ShoppingCartContext = {
+    openCart: () => void
+    closeCart: () => void
+    getItemQuantity: (id: number) => number
+    increaseCartQuantity: (id: number) => void
+    decreaseCartQuantity: (id: number) => void
+    removeFromCart: (id: number) => void
+    cartQuantity: number
+    cartItems: CartItem[]
+}
+```
+And at the end we declare:
+```tsx
+const ShoppingCartContext = createContext({} as ShoppingCartContext)
+```
+#### *UseShoppingCart & ShoppingCartProvider*
+Inside of this filewe export 2 functions as components. 
+##### *useShoppingCart* 
+Inside of this we call **useContext** and pass it the **ShoppingCartContext**.
+```tsx
+export function useShoppingCart() {
+    return useContext(ShoppingCartContext)
+}
+```
+##### *ShoppingCartProvider*
+###### *Props*
+The function takes in an object with a parameter of children with a type of **ShoppingCartProviderProps**.
+```tsx
+export function ShoppingCartProvider({ children }: ShoppingCartProviderProps){}
+```
+###### *State variables*
+First we declare 4 variables:
+```tsx
+const [isOpen, setIsOpen] = useState(false)
+const [cartItems, setCartItems] = useLocalStorage<CartItem[]>("shopping-cart", [])
+```
