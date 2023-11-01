@@ -5,8 +5,6 @@
 
 - [Installation](#Instalation)
 
-- [Start](#Start)
-
 - [Utilities](#Utilities)
 
 - [Data](#Data)
@@ -25,7 +23,7 @@ This is a Shopping Cart, Amazon like website that uses many React features and i
 First of all, it uses browser routing using the BrowserRouter component from "react-router-dom".
 Also, it incorporates custom hooks as well as advanced context functions.
 
-## Start 
+## Insallation
 First to write this code you are going to need **npm node**. To install it go to this site: https://nodejs.org/en/download
 
 When you have node, to create the project you are going to write:
@@ -219,6 +217,10 @@ export function useShoppingCart() {
 ###### *Props*
 The function takes in an object with a parameter of children with a type of **ShoppingCartProviderProps**.
 ```tsx
+type ShoppingCartProviderProps = {
+    children: ReactNode
+}
+
 export function ShoppingCartProvider({ children }: ShoppingCartProviderProps){}
 ```
 ###### *State variables*
@@ -226,4 +228,20 @@ First we declare 4 variables:
 ```tsx
 const [isOpen, setIsOpen] = useState(false)
 const [cartItems, setCartItems] = useLocalStorage<CartItem[]>("shopping-cart", [])
+```
+Then we calculate the total cart quantity like this:
+```tsx
+const cartQuantity = cartItems.reduce((quantity, item) => item.quantity + quantity, 0)
+```
+And we declare 2 function for toggling the cart open and closed.
+```tsx
+const openCart = () => setIsOpen(true)
+const closeCart = () => setIsOpen(false)
+```
+###### *Shopping Cart Context functions*
+The first one is **getItemQuantity** which is pretty simple, it returns the quantity of the wanted item or 0 if the quantity is 0.
+```tsx
+function getItemQuantity(id: number) {
+    return cartItems.find(item => item.id === id)?.quantity || 0
+}
 ```
