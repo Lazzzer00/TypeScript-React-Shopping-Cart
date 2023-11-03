@@ -38,7 +38,7 @@ export function Navbar() {
                         </div>
                     </Button>
                 )}
-        </Container>
-    </NavbarBs>
+            </Container>
+        </NavbarBs>
     )
 }
