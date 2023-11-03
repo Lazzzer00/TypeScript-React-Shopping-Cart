@@ -363,4 +363,4 @@ And then we check if the **cartQuantity** is more than 0, we return a button wit
 )}
 ```
 
-### ShoppingCart
+### CartItem
