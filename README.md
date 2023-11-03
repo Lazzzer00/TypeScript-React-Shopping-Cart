@@ -13,7 +13,9 @@
 
 - [Context](#Context)
 
-- [Pages & Components](#Pages)
+- [Components](#Components)
+
+- [Pages](#Pages)
 
 - [The End](#End)
 
@@ -311,6 +313,5 @@ return (
 )
 ```
 
-## Pages & Components
-### Components
-#### Navbar
+## Components
+### Navbar
