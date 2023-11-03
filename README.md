@@ -91,7 +91,7 @@ Every object has an **id** which is a number, a **name** which is a string, a **
 
 ## Hooks
 
-#### The **useLocalStorage.tsx** hook
+### The **useLocalStorage.tsx** hook
 It is a generic hook, which means it can work with any data type, and it takes 2 parameters:
 - **key**: A string that serves as the identifier for the value in local storage.
 - **intitialValue**: The initial value to be used if no value is found in local storage. It can be either a static value or a function that computes the initial value.
@@ -245,3 +245,72 @@ function getItemQuantity(id: number) {
     return cartItems.find(item => item.id === id)?.quantity || 0
 }
 ```
+The second one is **increaseCartQuantity**. Inside of it sets cart items. First we check if the cart quantity is *null*, if it is we set it to *1*. 
+Else if it quantity isn't *null*, we map through the **cart Items**, if the *id* of the item is the one we are searching for, we increase the quantity the quantity. And if that isn't the item we're searching of we just return it's state, not changed.
+```tsx
+function increaseCartQuantity(id: number) {
+    setCartItems(currItems => {
+        if (currItems.find(item => item.id === id) == null) {
+            return [...currItems, { id, quantity: 1 }]
+        } 
+        else {
+            return currItems.map(item => {
+                if (item.id === id) {
+                    return { ...item, quantity: item.quantity + 1 }
+                } 
+                else {
+                    return item
+                }
+            })
+        }
+    })
+}
+```
+The third function is **decreaseItemQuantity**. It works exactly the same as last one but it decreases instead of increasing the cart quantity.
+```tsx
+function decreaseCartQuantity(id: number) {
+    setCartItems(currItems => {
+        if (currItems.find(item => item.id === id)?.quantity === 1) {
+            return currItems.filter(item => item.id !== id)
+        }
+        else {
+            return currItems.map(item => {
+            if (item.id === id) {
+                return { ...item, quantity: item.quantity - 1 }
+            } 
+            else {
+                return item
+            }
+            })
+        }
+    })
+}
+```
+The last function is **removeFromCart**. I sets the cart item state by filtering the cart items so it decreases the total quantity by the quantity of the item that searched.
+```tsx
+function removeFromCart(id: number) {
+    setCartItems(currItems => {
+        return currItems.filter(item => item.id !== id)
+    })
+}
+```
+###### Return value
+The **ShoppingCartProvider** component return a **ShoppingCart.Provider** with the value of all the functions that we declared. 
+Inside of it is the children that we take in with the component. There is also the **ShoppingCart** component which we will talk about now.
+```tsx
+return (
+    <ShoppingCartContext.Provider
+        value={
+            { getItemQuantity, increaseCartQuantity, decreaseCartQuantity,
+            removeFromCart, openCart, closeCart, cartItems, cartQuantity}
+        }
+    >
+        {children}
+        <ShoppingCart isOpen={isOpen} />
+    </ShoppingCartContext.Provider>
+)
+```
+
+## Pages & Components
+### Components
+#### Navbar
