@@ -315,3 +315,52 @@ return (
 
 ## Components
 ### Navbar
+First we import some things from **bootstrap**. It is important that we import the bootstrap navbar as **NavbarBs**.
+```tsx
+import { Button, Container, Nav, Navbar as NavbarBs } from "react-bootstrap"
+```
+The we import the **NavLink** from react-router-dom so that we can route through the website. And lastly we import the **useShoppingCart** from the context.
+```tsx
+import { NavLink } from "react-router-dom"
+import { useShoppingCart } from "../context/shoppingCartContext"
+```
+First we have the **Nav** and 3 **Nav.Link**s inside of it.
+```tsx
+<Nav className="me-auto">
+    <Nav.Link to="/" as={NavLink}>
+        Home
+    </Nav.Link>
+    <Nav.Link to="/store" as={NavLink}>
+        Store
+    </Nav.Link>
+    <Nav.Link to="/about" as={NavLink}>
+        About
+    </Nav.Link>
+</Nav>
+```
+And then we check if the **cartQuantity** is more than 0, we return a button with a svg inside of it. If we click the button, the **sideBar** opens. 
+```tsx
+{cartQuantity > 0 && (
+    <Button onClick={openCart} style={{ width: "3rem", height: "3rem", position: "relative" }}
+        variant="outline-primary" className="rounded-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor">
+            <path d="..." />
+        </svg>
+        <div className="rounded-circle bg-danger d-flex justify-content-center align-items-center"
+            style={{
+                color: "white",
+                width: "1.5rem",
+                height: "1.5rem",
+                position: "absolute",
+                bottom: 0,
+                right: 0,
+                transform: "translate(25%, 25%)",
+            }}
+        >
+            {cartQuantity}
+        </div>
+    </Button>
+)}
+```
+
+### ShoppingCart
