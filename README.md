@@ -364,3 +364,46 @@ And then we check if the **cartQuantity** is more than 0, we return a button wit
 ```
 
 ### CartItem
+Imports are pretty simple, the only new one is **Stack** from bootstrap, which is a grid-like html structure.
+```tsx
+import { Button, Stack } from "react-bootstrap"
+import { useShoppingCart } from "../context/shoppingCartContext"
+import storeItems from "../data/items.json"
+import { formatCurrency } from "../utilities/formatCurrency"
+```
+The CartItem takes in an id which is a number, and a quantity which is also a number.
+```tsx
+type CartItemProps = {
+    id: number
+    quantity: number
+}
+
+export function CartItem({ id, quantity }: CartItemProps) {}
+```
+We get the **removeFromCart** function from the context we created.
+And we declare an item which is going to be one of the storeItems from the Data. If it doesn't exist we return null.
+```tsx
+const item = storeItems.find(i => i.id === id)
+if (item == null) return null
+```
+We return a Stack with a few things inside of it.
+First, it will be an img that we have an url stored in StoreItems.
+```tsx
+<img src={item.imgUrl} style={{ width: "125px", height: "75px", objectFit: "cover" }}/>
+```
+Secondly, it will be a div with the name of the item and it's price formated.
+```tsx
+<div className="me-auto">
+    <div>
+        {item.name}{" "}
+        {quantity > 1 && (
+            <span className="text-muted" style={{ fontSize: ".65rem" }}>x{quantity}</span>
+        )}
+    </div>
+    <div className="text-muted" style={{ fontSize: ".75rem" }}>{formatCurrency(item.price)}</div>
+</div>
+```
+Lastly, we have a button with an onClick that is the removeFromCart function.
+```tsx
+<Button variant="outline-danger" size="sm" onClick={() => removeFromCart(item.id)}> &times; </Button>
+```
