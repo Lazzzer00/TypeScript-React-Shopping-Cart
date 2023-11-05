@@ -407,3 +407,113 @@ Lastly, we have a button with an onClick that is the removeFromCart function.
 ```tsx
 <Button variant="outline-danger" size="sm" onClick={() => removeFromCart(item.id)}> &times; </Button>
 ```
+### Shopping Cart
+The next component is the shopping cart, which is the side menu that is only available once you put something inside the shopping cart.
+The only new thing we import is the **OffCanvas** from bootstrap. The OffCanvas is a hidden sidebar component.
+```tsx
+import { Offcanvas, Stack } from "react-bootstrap"
+import { CartItem } from "./CartItem"
+import { formatCurrency } from "../utilities/formatCurrency"
+import { useShoppingCart } from "../context/shoppingCartContext"
+import storeItems from "../data/items.json"
+```
+Then we have a the component which takes in an state called **isOpen** which is a boolean.
+```tsx
+type ShoppingCartProps = {
+    isOpen: boolean
+}
+
+export function ShoppingCart({ isOpen }: ShoppingCartProps) {}
+```
+We declare the **closeCart** and the **cartItems** function from our context.
+```tsx
+const { closeCart, cartItems } = useShoppingCart()
+```
+Then we will return an OffCanvas component. We will set it's visibility according to the **isOpen** prop we passed the component.
+```tsx
+<Offcanvas show={isOpen} onHide={closeCart} placement="end"></Offcanvas>
+```
+Inside of it we have a header with a closeButton and a title of "Cart".
+```tsx
+<Offcanvas.Header closeButton>
+    <Offcanvas.Title>Cart</Offcanvas.Title>
+</Offcanvas.Header>
+```
+Then we have the body and a stack inside of it. Inside of it we will map through all our cartItems nad return a CartItem for each we find. We will pass it the id and the state.
+```tsx
+<Stack gap={3}>
+    {cartItems.map(item => (
+        <CartItem key={item.id} {...item} />
+    ))}
+</Stack>
+```
+And lastly we will have a div, containing the total bill of the cart.
+```tsx
+<div className="ms-auto fw-bold fs-5">
+    Total{" "}
+    {formatCurrency(
+        cartItems.reduce((total, cartItem) => {
+        const item = storeItems.find(i => i.id === cartItem.id)
+        return total + (item?.price || 0) * cartItem.quantity
+        }, 0)
+    )}
+</div>
+```
+### Store Item
+Simple imports already explained.
+```tsx
+import { Button, Card } from "react-bootstrap"
+import { formatCurrency } from "../utilities/formatCurrency"
+import { useShoppingCart } from "../context/shoppingCartContext"
+```
+The component takes in an id, a name, a price and an imgUrl.
+```tsx
+type StoreItemProps = {
+    id: number
+    name: string
+    price: number
+    imgUrl: string
+}
+
+export function StoreItem({id, name, price, imgUrl}: StoreItemProps) {}
+```
+We declare the functions for manipulating the quantity from our context, and the we get the quantity of our desired item.
+```tsx
+const {getItemQuantity, increaseCartQuantity, decreaseCartQuantity, removeFromCart} = useShoppingCart()
+const quantity = getItemQuantity(id)
+```
+We return a **Card**. The **Card** will have an img with the source of the imgUrl we passed the component.
+```tsx
+<Card className="h-100">
+    <Card.Img variant="top" src={imgUrl} height="200px" style={{objectFit: "cover"}}/>
+</Card>
+```
+The we have our **Card.Body** with a title of the name of our product and it's price formated.
+```tsx
+<Card.Body  className="d-flex flex-column">
+    <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
+        <span className="fs-2">{name}</span>
+        <span className="ms-2 text-muted">{formatCurrency(price)}</span>
+    </Card.Title>
+<.Card.Body>
+```
+The we will chech if the quantity is 0. If it is we will return a with the text "+ Add to cart" and the increaseCartQuantity function onClick.
+```tsx
+{quantity === 0 ? (
+    <Button className="w-100" onClick={() => increaseCartQuantity(id)}>+ Add To Cart</Button>
+) : (...)
+```
+If the quantity isn't 0, we return a **+** button, a **-** button, a displayer of our quantity and a remove from cart button.
+```tsx
+<div className="d-flex align-items-center flex-column" style={{gap: ".5rem"}}>
+    <div className="d-flex align-items-center justify-content-center" style={{gap: ".5rem"}}>
+        <Button onClick={() => decreaseCartQuantity(id)}>-</Button>
+        <div>
+            <span className="fs-3">{quantity}</span> in cart
+        </div>
+        <Button onClick={() => increaseCartQuantity(id)}>+</Button>
+    </div>
+    <Button variant="danger" size="sm" onClick={() => removeFromCart(id)}>Remove</Button>
+</div>
+```
+## Pages
