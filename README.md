@@ -517,3 +517,26 @@ If the quantity isn't 0, we return a **+** button, a **-** button, a displayer o
 </div>
 ```
 ## Pages
+### Home & About
+These 2 pages are pretty simple. No states and no reactivity.
+
+### Store
+We import the data from the JSON file, the **Row** and **Col** from bootstrap which are grid-like structures. And lastly we import the **StoreItem** component.
+```tsx
+import storeItems from "../data/items.json"
+import { Row, Col} from "react-bootstrap"
+import { StoreItem } from "../components/StoreItem"
+```
+The component doesn't take any props in. It return an h1 and a Row that will return a Col for each item found in the JSON.
+```tsx
+<Row md={2} xs={1} lg={3} className="g-3">
+    {storeItems.map(item => (
+        <Col key={item.id}><StoreItem {...item} /></Col>
+    ))}
+</Row>
+```
+**md** = {2} means 2 rows on medium size monitors, **xs** = {1} means 1 row on small screen sizes and **lg** = {3} means 3 rows on large screen sizes.
+
+## End
+This project has come to an end. It was a journey but we made to the end. Overall this is a great project for beginner and intermediate programmers to learn React with TypeScript. The bootstrap styling is just something I like doing but you can use Tailwind, Sass or just plain normal CSS. If there is anything you don't understand or would like to add, contact me!
+Have a great day!
