@@ -1,7 +1,7 @@
 # React TypeScript Shopping Cart Website
 ## Table of Contents
 
-- [Intoduction](#Intro)
+- [Introduction](#Intro)
 
 - [Installation](#Instalation)
 
